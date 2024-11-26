@@ -1,0 +1,19 @@
+<div>
+    <!-- File input to select the product IDs JSON file -->
+    <input type="file" (change)="onFileSelected($event)" accept="application/json" />
+    
+    <!-- Only show the button if productIds array is populated -->
+    <button *ngIf="productIds.length > 0 && !isLoading" (click)="fetchProducts(productIds)">
+      Fetch Products
+    </button>
+  
+    <!-- Loading spinner or message while data is being fetched -->
+    <div *ngIf="isLoading">Loading products...</div>
+  
+    <!-- Show product list once products are available -->
+    <ul *ngIf="!isLoading">
+      <li *ngFor="let product of products">{{ product.title }}</li>
+    </ul>
+</div>
+
+<button (click)="saveProductIds()">Download Product Data</button>
