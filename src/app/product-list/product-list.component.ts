@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component} from '@angular/core';
 import { TakealotProductService } from '../services/takealot-product.service';
 import { NgFor, NgIf } from '@angular/common';
 
@@ -9,14 +9,12 @@ import { NgFor, NgIf } from '@angular/common';
   templateUrl: './product-list.component.html',
   styleUrl: './product-list.component.css'
 })
-export class ProductListComponent implements OnInit {
+export class ProductListComponent{
   products: any[] = [];
   productIds: string[] = [];
   isLoading: boolean = false;
 
   constructor(private productService: TakealotProductService) {}
-
-  ngOnInit(): void {}
 
   // Save product IDs to a local file
   saveProductIds(): void {
