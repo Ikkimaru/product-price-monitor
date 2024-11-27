@@ -11,47 +11,45 @@ import { NgFor, NgIf } from '@angular/common';
 })
 export class ProductListComponent{
   products: any[] = [];
-  productIds: string[] = [];
+  productIds: any[] = [];
   isLoading: boolean = false;
 
-  constructor(private productService: TakealotProductService) {}
+  constructor(private takealotProductService: TakealotProductService) {}
 
-  // Save product IDs to a local file
-  saveProductIds(): void {
-    this.productService.saveProductIds(this.productIds);
+  // Save the modified product data to a new file
+  saveProductData(): void {
+    this.takealotProductService.saveData();
   }
 
-  // Fetch product data using the string IDs read from the file
-  fetchProducts(ids: string[]): void {
-    this.isLoading = true; // Set loading flag to true
-
-    // Call service to get products
-    this.productService.getProducts(ids).subscribe(
-      (data) => {
-        this.products = data; // Update products with fetched data
-        this.isLoading = false; // Set loading flag to false once data is fetched
+  // Fetch products using the IDs loaded from the JSON file
+  fetchProducts(): void {
+    this.isLoading = true;
+    this.productIds = this.products.map(product => product.id); // Extract product IDs from the products array
+    this.takealotProductService.getProducts(this.productIds).subscribe(
+      (fetchedProducts) => {
+        this.products = fetchedProducts;
       },
       (error) => {
-        console.error('Error fetching products:', error);
-        this.isLoading = false; // Set loading flag to false on error
+        console.error('Error fetching product data', error);
       }
     );
+    this.takealotProductService.mergeData(this.products);
+    this.products = this.takealotProductService.getProductsFromMemory();
+    this.isLoading = false;
   }
 
-  // Handles file selection
-  onFileSelected(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const file = input?.files?.[0];
+  // Handle file selection and parse the JSON data
+  onFileSelected(event: any): void {
+    const file = event.target.files[0];
 
     if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        this.productIds = JSON.parse(reader.result as string);
-        console.log('Product IDs:', this.productIds);
-        // Fetch products once the file is read
-        this.fetchProducts(this.productIds);
-      };
-      reader.readAsText(file);
+      // Pass the file to the service method for processing
+      this.takealotProductService.loadDataFromFile(file).then(products => {
+        // Update the component's products array with the loaded data
+        this.products = products;
+        console.log("Products loaded into the component:", this.products);
+      });
     }
   }
+
 }
