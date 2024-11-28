@@ -1,33 +1,35 @@
 <div>
-  <!-- File input to select the product IDs JSON file -->
-  <input type="file" (change)="onFileSelected($event)" accept="application/json" />
+  <h1>Product Monitor</h1>
 
-  <!-- Button to fetch products -->
-  <button *ngIf="products.length > 0 && !isLoading" (click)="fetchProducts()">Fetch Products</button>
+  <!-- File Upload -->
+  <div>
+    <label for="fileInput">Upload JSON File:</label>
+    <input type="file" id="fileInput" (change)="onFileUpload($event)" accept=".json" />
+  </div>
 
-  <!-- Show loading message -->
-  <div *ngIf="isLoading">Loading products...</div>
+  <!-- Error Message -->
+  <div *ngIf="errorMessage" style="color: red;">
+    {{ errorMessage }}
+  </div>
 
-  <!-- Display products with their history -->
-  <ul *ngIf="!isLoading && products.length > 0">
-    <li *ngFor="let product of products">
-      <div>
-        <!-- Product title and gallery -->
-        <div style="display: flex; align-items: center;">
-          <img [src]="product.gallery" alt="{{ product.title }}" *ngIf="product.gallery" style="width: 50px; margin-right: 10px;">
-          <p>{{ product.title }}</p>
-        </div>
-
-        <!-- Display price history -->
+  <!-- Product List -->
+  <div *ngIf="products.length > 0">
+    <h2>Products:</h2>
+    <ul>
+      <li *ngFor="let product of products">
+        <strong>{{ product.title }}</strong> (ID: {{ product.id }}, Store: {{ product.store }})
+        <img [src]="product.image" alt="{{ product.title }}" style="max-width: 50px;" />
+        <p>Base ID: {{ product.baseId }}</p>
+        <p>Current Price: R{{ product.price }}</p>
+        <p>Sale Percentage: {{ product.salePercentage }}%</p>
         <ul>
-          <li *ngFor="let history of product.priceHistory">
-            Date: {{ history.date }} | Price: {{ history.price }} | Sale: {{ history.salePercentage }}%
+          <li *ngFor="let entry of product.priceHistory">
+            {{ entry.date }} - R{{ entry.price }} ({{ entry.salePercentage }}% off)
           </li>
         </ul>
-      </div>
-    </li>
-  </ul>
-
-  <!-- Button to save product data -->
-  <button *ngIf="products.length > 0" (click)="saveProductData()">Download Modified Product Data</button>
+      </li>
+    </ul>
+    <button (click)="updateProductDetails()">Update Products</button>
+    <button (click)="downloadUpdatedFile()">Download Updated File</button>
+  </div>
 </div>
