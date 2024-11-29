@@ -8,28 +8,64 @@
   </div>
 
   <!-- Error Message -->
-  <div *ngIf="errorMessage" style="color: red;">
+  <div *ngIf="errorMessage" class="error-message">
     {{ errorMessage }}
+  </div>
+
+  <!-- New Product URL Entry -->
+  <div>
+    <label for="newProductURL">Enter Product URL:</label>
+    <input
+      type="text"
+      id="newProductURL"
+      [(ngModel)]="productUrl"
+      (ngModelChange)="extractDomainFromUrl(productUrl)"
+      (click)="selectAllText($event)"
+      class="url-input"
+    />
+    <br>
+    <p>{{extractedStoreMessage}}</p>
+
+    <button
+      (click)="onAddNewProduct()"
+      [disabled]="!isStoreValid"
+      [class.disabled]="!isStoreValid"
+      class="add-product-btn">
+      Add New Product
+    </button>
+    <button (click)="updateProductDetails()">Update Products</button>
+    <button (click)="downloadUpdatedFile()">Download Updated File</button>
   </div>
 
   <!-- Product List -->
   <div *ngIf="products.length > 0">
     <h2>Products:</h2>
     <ul>
-      <li *ngFor="let product of products">
-        <strong>{{ product.title }}</strong> (ID: {{ product.id }}, Store: {{ product.store }})
-        <img [src]="product.image" alt="{{ product.title }}" style="max-width: 50px;" />
-        <p>Base ID: {{ product.baseId }}</p>
-        <p>Current Price: R{{ product.price }}</p>
-        <p>Sale Percentage: {{ product.salePercentage }}%</p>
-        <ul>
-          <li *ngFor="let entry of product.priceHistory">
-            {{ entry.date }} - R{{ entry.price }} ({{ entry.salePercentage }}% off)
-          </li>
-        </ul>
+      <li *ngFor="let product of products" class="product-item">
+        <div class="product-details">
+          <div class="product-info">
+            <strong>{{ product.title }}</strong> (ID: {{ product.id }}, Store: {{ product.store }})
+            <p>Base ID: {{ product.baseId }}</p>
+            <p>Current Price: R{{ product.price }}</p>
+            <p>Sale Percentage: {{ product.salePercentage }}%</p>
+          </div>
+
+          <!-- Clickable Image -->
+          <a [href]="product.url" target="_blank" class="product-image-link">
+            <img [src]="product.image" alt="{{ product.title }}" class="product-image" />
+          </a>
+        </div>
+
+        <!-- Price History Section -->
+        <div class="price-history">
+          <h3>Price History:</h3>
+          <ul>
+            <li *ngFor="let entry of product.priceHistory">
+              {{ entry.date }} - R{{ entry.price }} ({{ entry.salePercentage }}% off)
+            </li>
+          </ul>
+        </div>
       </li>
     </ul>
-    <button (click)="updateProductDetails()">Update Products</button>
-    <button (click)="downloadUpdatedFile()">Download Updated File</button>
   </div>
 </div>

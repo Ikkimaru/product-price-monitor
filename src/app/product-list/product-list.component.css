@@ -1,0 +1,202 @@
+/* Global Styles */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f4f4f9;
+}
+
+/* Heading Styles */
+h1 {
+  text-align: center;
+  color: #333;
+  font-size: 2rem;
+  margin-top: 20px;
+}
+
+/* File Upload Section */
+div > label {
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+input[type="file"] {
+  margin: 10px 0;
+}
+
+div {
+  margin: 20px;
+}
+
+/* Error Message */
+div[style="color: red;"] {
+  color: red;
+  font-weight: bold;
+  margin-top: 10px;
+  text-align: center;
+}
+
+/* New Product URL Input Section */
+#newProductURL {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1rem;
+}
+
+button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px 20px;
+  font-size: 1rem;
+  margin-top: 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #45a049;
+}
+
+/* Product List */
+h2 {
+  font-size: 1.5rem;
+  color: #333;
+  margin-top: 20px;
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.product-item {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  padding: 15px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Flex container for product details */
+.product-details {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+/* Product Information */
+.product-info {
+  flex: 1;
+  margin-right: 20px;
+}
+
+strong {
+  font-size: 1.2rem;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.product-info p {
+  font-size: 1rem;
+  color: #555;
+  margin: 5px 0;
+}
+
+/* Product Image Link */
+.product-image-link {
+  display: inline-block;
+}
+
+.product-image {
+  max-width: 100px;
+  height: auto;
+  border-radius: 5px;
+}
+
+/* Price History Styling */
+.price-history {
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  padding: 10px;
+  margin-top: 15px;
+  border-radius: 5px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.price-history h3 {
+  font-size: 1.1rem;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.price-history ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.price-history li {
+  font-size: 0.95rem;
+  color: #555;
+  margin-bottom: 5px;
+}
+
+/* Product Price and Sale Information */
+ul li {
+  margin-top: 5px;
+}
+
+/* Additional Styling for Buttons */
+button + button {
+  background-color: #007bff;
+  margin-left: 10px;
+}
+
+button + button:hover {
+  background-color: #0056b3;
+}
+
+/* Clear Styling for URL Input */
+input:focus {
+  outline: none;
+  border-color: #4CAF50;
+}
+
+.error-message {
+  color: red; /* Text color */
+  background-color: #f8d7da; /* Light red background */
+  border: 1px solid #f5c6cb; /* Light red border */
+  padding: 10px;
+  border-radius: 5px;
+  font-size: 14px;
+  margin-bottom: 15px;
+  text-align: center; /* Center text */
+}
+
+.add-product-btn:disabled {
+  background-color: #d3d3d3; /* Gray background */
+  color: #a9a9a9; /* Lighter text */
+  border: 1px solid #c0c0c0; /* Lighter border */
+  cursor: not-allowed; /* Change cursor to show it is disabled */
+}
+
+.add-product-btn {
+  background-color: #4CAF50; /* Default button color */
+  color: white; /* Default text color */
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+.add-product-btn:hover {
+  background-color: #45a049; /* Slightly darker color on hover */
+}
