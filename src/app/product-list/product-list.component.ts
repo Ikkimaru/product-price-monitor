@@ -1,9 +1,11 @@
 import {Component} from '@angular/core';
 import { TakealotProductService } from '../services/takealot-product.service';
+import {SteamProductService} from '../services/steam-product.service';
 import { NgFor, NgIf} from '@angular/common';
 import { Product, PriceHistory } from '../models/product-model';
 import {FormsModule} from '@angular/forms';
 import {HttpErrorResponse} from '@angular/common/http';
+import {delay} from 'rxjs';
 
 @Component({
   selector: 'app-product-list',
@@ -19,10 +21,10 @@ export class ProductListComponent{
   newProductId: string = '';
   isStoreValid: boolean = false;
   selectedStore: string = '';
-  supportedStores: string[] = ['Takealot'];
+  supportedStores: string[] = ['Takealot', 'Steampowered'];
   extractedStoreMessage: string = '';
 
-  constructor(private TakealotProductService: TakealotProductService) {}
+  constructor(private TakealotProductService: TakealotProductService,private SteamProductService: SteamProductService) {}
 
   // Handle user file input
   onFileUpload(event: any): void {
@@ -66,18 +68,24 @@ export class ProductListComponent{
         this.newProductId = this.TakealotProductService.extractProductId(this.productUrl);
         this.addNewProductUsingService(this.TakealotProductService);
       }
+      if (this.selectedStore === 'Steampowered') {
+        this.newProductId = this.SteamProductService.extractProductId(this.productUrl);
+        this.addNewProductUsingService(this.SteamProductService);
+      }
     } else {
       this.errorMessage = 'Store is not supported.';
     }
   }
 
   extractDomainFromUrl(url: string): void {
-    const regex = /(?:https?:\/\/)?(?:www\.)?([^\/\s\.]+)\./;
+    const regex = /(?:https?:\/\/)?(?:www\.)?(?:[a-zA-Z0-9-]+\.)?([a-zA-Z0-9-]+)\./;
     const result = regex.exec(url);
 
     if (result) {
       const domain = result[1].toLowerCase();
       this.selectedStore = domain.charAt(0).toUpperCase() + domain.slice(1);
+    } else {
+      this.selectedStore = ''; // Clear store if no match
     }
 
     // Check if the selected store is in the supported stores list
@@ -90,6 +98,7 @@ export class ProductListComponent{
     }
   }
 
+
   private addNewProductUsingService(storeService: any): void {
     if(this.newProductId != ''){
       storeService.addNewProduct(this.newProductId, this.products).subscribe({
@@ -99,7 +108,7 @@ export class ProductListComponent{
           this.productUrl = '';
           this.extractedStoreMessage = '';
           this.errorMessage = '';
-          this.updateProductDetails();
+          this.updateProductDetailsWithDelay();
         },
         error: (err:HttpErrorResponse) => {
           console.error('Error adding product:', err);
@@ -110,21 +119,31 @@ export class ProductListComponent{
       this.errorMessage = 'Product ID not found.';
     }
   }
+
   // Update details for all products
-  updateProductDetails(): void {
-    this.products.forEach((product) => {
-      if(product.store == 'Takealot'){
-        this.updateSingleProductDetails(product, this.TakealotProductService);
+  async updateProductDetailsWithDelay(): Promise<void> {
+    const today = new Date().toISOString().split('T')[0]; // Extract date only
+
+    for (const product of this.products) {
+      // Perform the date check before calling updateSingleProductDetails
+      const lastHistory = product.priceHistory[product.priceHistory.length - 1];
+      if (!lastHistory || lastHistory.date !== today) {
+        if (product.store === 'Takealot') {
+          await this.updateSingleProductDetails(product, this.TakealotProductService, today);
+        }
+        if (product.store === 'Steam') {
+          await this.updateSingleProductDetails(product, this.SteamProductService, today);
+        }
       }
-    });
+      // Add a delay of 1 second between API calls
+      await delay(1000);  // 1000 ms = 1 second
+    }
   }
 
-  // Update details for a single product and add price history if necessary
-  updateSingleProductDetails(product: Product, productService: any): void {
+  // Update details for a single product and add price history
+  updateSingleProductDetails(product: Product, productService: any, today: string): void {
     productService.getProductById(product.id).subscribe({
       next: (updatedProduct: Product) => {
-        const today = new Date().toISOString().split('T')[0]; // Extract date only
-
         // Update product details from API response
         product.baseId = updatedProduct.baseId;
         product.title = updatedProduct.title;
@@ -134,25 +153,19 @@ export class ProductListComponent{
         product.price = updatedProduct.price;
         product.salePercentage = updatedProduct.salePercentage;
 
-        // Check if the latest entry in priceHistory is for today's date
-        const lastHistory = product.priceHistory[product.priceHistory.length - 1];
-        if (!lastHistory || lastHistory.date !== today) {
-          // Add to price history only if the last entry date is different from today
-          const newHistory: PriceHistory = {
-            price: updatedProduct.price,
-            salePercentage: updatedProduct.salePercentage,
-            date: today,
-          };
-          product.priceHistory.push(newHistory);
-        }
+        // Add to price history only if the last entry date is different from today
+        const newHistory: PriceHistory = {
+          price: updatedProduct.price,
+          salePercentage: updatedProduct.salePercentage,
+          date: today,
+        };
+        product.priceHistory.push(newHistory);
       },
       error: (error: HttpErrorResponse) => {
         console.error(`Failed to fetch data for product ID: ${product.id}`, error);
       },
     });
   }
-
-
 
   // Download updated file
   downloadUpdatedFile(): void {
